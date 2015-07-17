@@ -147,7 +147,7 @@
         }
 
         if (relativePath[0] === '/') {
-          relativePath = '.' + relativePath
+          relativePath = '.' + relativePath;
         }
       }
 
