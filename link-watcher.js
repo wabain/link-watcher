@@ -111,11 +111,17 @@
   function getPathInfo(anchorElem, event, rootInfo) {
     var pathInfo = urlResolve(anchorElem.href);
 
-    var isRelative = (pathInfo.protocol === rootInfo.protocol &&
-                      pathInfo.host === rootInfo.host &&
-                      pathInfo.pathname.substr(0, rootInfo.pathname.length) === rootInfo.pathname);
+    var isRelative, relativePath, isLocalLink;
 
-    var relativePath, isLocalLink;
+    if (pathInfo.protocol !== rootInfo.protocol || pathInfo.host !== rootInfo.host ||
+        rootInfo.pathname !== pathInfo.pathname.substr(0, rootInfo.pathname.length)) {
+
+      isRelative = false;
+    } else {
+      isRelative = (pathInfo.pathname.length === rootInfo.pathname.length ||
+                    pathInfo.pathname[rootInfo.pathname.length] === '/' ||
+                    rootInfo.pathname[rootInfo.pathname.length - 1] === '/');
+    }
 
     if (!isRelative) {
       relativePath = null;
