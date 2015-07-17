@@ -41,6 +41,10 @@
 
   // global
   } else {
+    /**
+     * Restore the initial value of LinkWatcher and return this module.
+     * Defined when used as a browser global.
+     */
     var noConflict = function () {
       window.LinkWatcher = oldLinkWatcher;
       return LinkWatcher;
