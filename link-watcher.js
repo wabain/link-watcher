@@ -102,13 +102,13 @@
       if (!a || typeof a.getAttribute('href') !== 'string')
         return;
 
-      var pathInfo = getPathInfo(a, rootInfo);
+      var pathInfo = getPathInfo(a, event, rootInfo);
 
       callback(event, pathInfo);
     };
   }
 
-  function getPathInfo(anchorElem, rootInfo) {
+  function getPathInfo(anchorElem, event, rootInfo) {
     var pathInfo = urlResolve(anchorElem.href);
 
     var isRelative = (pathInfo.protocol === rootInfo.protocol &&
@@ -132,17 +132,15 @@
         }
       }
 
-      pathInfo.relativePath = relativePath;
-
       var defaultPrevented = event.isDefaultPrevented ? event.isDefaultPrevented() : event.defaultPrevented;
 
-      pathInfo.isLocalLink = !(defaultPrevented ||
-                               // Control/command key pressed
-                               event.ctrlKey || event.metaKey ||
-                               // Clicked with center mouse button
-                               event.which === 2 ||
-                               // Target iframe specified
-                               a.getAttribute('target'));
+      isLocalLink = !(defaultPrevented ||
+                      // Control/command key pressed
+                      event.ctrlKey || event.metaKey ||
+                      // Clicked with center mouse button
+                      event.which === 2 ||
+                      // Target iframe specified
+                      anchorElem.getAttribute('target'));
     }
 
     extend(pathInfo, {
