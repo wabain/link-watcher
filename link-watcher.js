@@ -54,8 +54,9 @@
   'use strict';
 
   // Export functions
-  exports.watch            = watch;
+  exports.onLinkClicked    = onLinkClicked;
   exports.getListener      = getListener;
+  exports.getPathInfo      = getPathInfo;
   exports.urlResolve       = urlResolve;
 
   /**
@@ -64,22 +65,19 @@
    *
    * Options:
    *
-   *  - `rootElement`: The root element to watch (defaults to `document.body`).
-   *    Can be either a DOM element or a jQuery object.
-   *
    *  - `rootHref`: A URL to treat as the root for relative path detection. Defaults
    *    to `window.location.href`.
    *
-   * @param {Function=} callback
+   * @param {HTMLElement|jQuery} rootElement The root element to watch
+   * @param {Function=} callback Called with the event object and the path info
    * @param {Object=} options
    * @returns The bound listener function, so that it can be unbound
    */
-  function watch(callback, options) {
+  function onLinkClicked(rootElement, callback, options) {
     options = options || {};
 
     // Get values for options
     var rootHref = options.rootHref || window.location.href;
-    var rootElement = options.rootElement || document.body;
 
     // Get the event listener callback
     var listener = getListener(rootHref, callback);
@@ -107,7 +105,7 @@
 
       var pathInfo = getPathInfo(a, rootInfo, rootPathComponents);
 
-      callback(pathInfo, event);
+      callback(event, pathInfo);
     };
   }
 
