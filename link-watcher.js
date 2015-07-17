@@ -55,7 +55,6 @@
 
   // Export functions
   exports.onLinkClicked    = onLinkClicked;
-  exports.getListener      = getListener;
   exports.getPathInfo      = getPathInfo;
   exports.urlResolve       = urlResolve;
 
