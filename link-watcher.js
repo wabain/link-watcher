@@ -95,7 +95,6 @@
   // TODO: support xlink:href and SVG strings
   function getListener(rootHref, callback) {
     var rootInfo = urlResolve(rootHref);
-    var rootPathComponents = getPathComponents(rootInfo.pathname);
 
     return function listen(event) {
       var a = getAnchorElement(event.target, event.currentTarget);
@@ -103,20 +102,18 @@
       if (!a || typeof a.getAttribute('href') !== 'string')
         return;
 
-      var pathInfo = getPathInfo(a, rootInfo, rootPathComponents);
+      var pathInfo = getPathInfo(a, rootInfo);
 
       callback(event, pathInfo);
     };
   }
 
-  function getPathInfo(anchorElem, rootInfo, rootPathComponents) {
+  function getPathInfo(anchorElem, rootInfo) {
     var pathInfo = urlResolve(anchorElem.href);
-
-    var pathComponents = getPathComponents(pathInfo.pathname);
 
     var isRelative = (pathInfo.protocol === rootInfo.protocol &&
                       pathInfo.host === rootInfo.host &&
-                      hasPrefix(pathComponents, rootPathComponents))
+                      pathInfo.pathname.substr(0, rootInfo.pathname.length) === rootInfo.pathname);
 
     var relativePath, isLocalLink;
 
@@ -124,10 +121,16 @@
       relativePath = null;
       isLocalLink = false;
     } else {
-      var relativePath = pathInfo.pathComponents.slice(rootPathComponents.length).join('/');
+      relativePath = pathInfo.pathname.substring(rootInfo.pathname.length);
 
-      if (pathInfo.search) relativePath += '?' + pathInfo.search;
-      if (pathInfo.hash) relativePath += '#' + pathInfo.hash;
+      if (relativePath[0] === '/') {
+        relativePath = relativePath.substring(1);
+
+        // Corner case: multiple slashes
+        if (relativePath[0] === '/') {
+          relativePath = '.' + relativePath
+        }
+      }
 
       pathInfo.relativePath = relativePath;
 
@@ -144,7 +147,6 @@
 
     extend(pathInfo, {
       anchor: anchorElem,
-      pathComponents: pathComponents,
       isRelative: isRelative,
       relativePath: relativePath,
       isLocalLink: isLocalLink
@@ -183,21 +185,6 @@
     }
 
     return null;
-  }
-
-  function getPathComponents(path) {
-    if (path.length === 1)
-      return [];
-
-    // This works because urlResolve ensures that there is a leading slash
-    var components = path.slice(1).split('/');
-
-    // Remove an empty trailing component
-    if (components[components.length - 1] === '') {
-      components.splice(-1, 1);
-    }
-
-    return components;
   }
 
   /**
