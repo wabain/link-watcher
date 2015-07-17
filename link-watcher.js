@@ -120,7 +120,8 @@
 
     var isRelative, relativePath, isLocalLink;
 
-    if (pathInfo.protocol !== rootInfo.protocol || pathInfo.host !== rootInfo.host ||
+    if (pathInfo.protocol !== rootInfo.protocol ||
+        pathInfo.host.toLowerCase() !== rootInfo.host.toLowerCase() ||
         rootPath !== path.substr(0, rootPath.length)) {
 
       isRelative = false;
