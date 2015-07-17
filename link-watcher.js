@@ -68,8 +68,8 @@
    *
    * Options:
    *
-   *  - `rootHref`: A URL to treat as the root for relative path detection. Defaults
-   *    to `window.location.href`.
+   *  - `rootHref`: A URL to treat as the root for relative path detection. It
+   *    is resolved against the current location and defaults to `window.location.href`.
    *
    * @param {HTMLElement|jQuery} rootElement The root element to watch
    * @param {Function=} callback Called with the event object and the path info
@@ -114,27 +114,31 @@
   function getPathInfo(anchorElem, event, rootInfo) {
     var pathInfo = urlResolve(anchorElem.href);
 
+    // Convenience variables
+    var path = pathInfo.pathname,
+        rootPath = rootInfo.pathname;
+
     var isRelative, relativePath, isLocalLink;
 
     if (pathInfo.protocol !== rootInfo.protocol || pathInfo.host !== rootInfo.host ||
-        rootInfo.pathname !== pathInfo.pathname.substr(0, rootInfo.pathname.length)) {
+        rootPath !== path.substr(0, rootPath.length)) {
 
       isRelative = false;
     } else {
-      isRelative = (pathInfo.pathname.length === rootInfo.pathname.length ||
-                    pathInfo.pathname[rootInfo.pathname.length] === '/' ||
-                    rootInfo.pathname[rootInfo.pathname.length - 1] === '/');
+      isRelative = (path.length === rootPath.length ||
+                    path[rootPath.length] === '/' ||
+                    rootPath[rootPath.length - 1] === '/');
     }
 
     if (!isRelative) {
       relativePath = null;
       isLocalLink = false;
     } else {
-      relativePath = pathInfo.pathname.substring(rootInfo.pathname.length);
+      relativePath = path.substring(rootPath.length);
 
       if (relativePath[0] === '/') {
         // We need these conditions to handle some corner cases around URLs with multiple slashes
-        if (rootInfo.pathname[rootInfo.pathname.length - 1] === '/') {
+        if (rootPath[rootPath.length - 1] === '/') {
           // FIXME
 
           // Given a root like foo/ and a URL like foo//bar, we get a naive relative path of /bar and
