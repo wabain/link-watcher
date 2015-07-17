@@ -124,9 +124,19 @@
       relativePath = pathInfo.pathname.substring(rootInfo.pathname.length);
 
       if (relativePath[0] === '/') {
-        relativePath = relativePath.substring(1);
+        // We need these conditions to handle some corner cases around URLs with multiple slashes
+        if (rootInfo.pathname[rootInfo.pathname.length - 1] === '/') {
+          // FIXME
 
-        // Corner case: multiple slashes
+          // Given a root like foo/ and a URL like foo//bar, we get a naive relative path of /bar and
+          // we need to get other slashes from the root path
+          relativePath = '/' + relativePath;
+        } else if (relativePath[1] !== '/') {
+          // Given a root like foo and a URL like foo//bar, we get a naive relative path of //bar, which
+          // shouldn't be normalized to /bar
+          relativePath = relativePath.substring(1);
+        }
+
         if (relativePath[0] === '/') {
           relativePath = '.' + relativePath
         }
