@@ -177,20 +177,6 @@
     return pathInfo;
   }
 
-  function hasPrefix(array, prefix) {
-    var prefixSize = prefix.length;
-
-    if (prefixSize > array.length)
-      return false;
-
-    for (var i=0; i < prefixSize; i++) {
-      if (array[i] !== prefix[i])
-        return false;
-    }
-
-    return true;
-  }
-
   /**
    * Find the anchor element an element is within, if any
    *
