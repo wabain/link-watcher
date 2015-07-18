@@ -209,8 +209,6 @@
 
   // The following code is adapted from Angular's location service
 
-  // jshint ignore:start
-
   /**
    * documentMode is an IE-only property
    * http://msdn.microsoft.com/en-us/library/ie/cc196988(v=vs.85).aspx
@@ -271,7 +269,8 @@
    *   | pathname      | The pathname, beginning with "/"
    *
    */
-  function urlResolve(url, base) {
+  function urlResolve(url) {
+    // jshint -W014
     var href = url;
 
     if (msie) {
@@ -297,8 +296,6 @@
         : '/' + urlParsingNode.pathname
     };
   }
-
-  // jshint ignore:end
 
   return exports;
 }));
