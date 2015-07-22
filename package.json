@@ -1,0 +1,20 @@
+{
+  "name": "link-watcher",
+  "version": "0.0.0",
+  "description": "Framework-agnostic link watching utility",
+  "main": "src/link-watcher.js",
+  "devDependencies": {
+    "uglify-js": "~2.4.13",
+    "karma": "~0.13.0",
+    "jasmine-core": "~2.3.4",
+    "karma-jasmine": "~0.3.3",
+    "karma-phantomjs-launcher": "~0.1.4"
+  },
+  "scripts": {
+    "test": "karma start",
+    "test-ci": "karma start --single-run",
+    "build": "cp src/link-watcher.js dist/link-watcher.js && uglifyjs dist/link-watcher.js -cm --source-map dist/link-watcher.min.js.map -o dist/link-watcher.min.js"
+  },
+  "author": "William Bain <bain.william.a@gmail.com>",
+  "license": "MIT"
+}
