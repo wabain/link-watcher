@@ -15,7 +15,8 @@
     "test": "karma start",
     "test-ci": "karma start --single-run",
     "build": "cp src/link-watcher.js dist/link-watcher.js && uglifyjs dist/link-watcher.js -cm --source-map dist/link-watcher.min.js.map -o dist/link-watcher.min.js",
-    "lint": "jshint src/ test/"
+    "lint": "jshint src/ test/",
+    "preversion": "npm run lint && npm run test-ci"
   },
   "author": "William Bain <bain.william.a@gmail.com>",
   "license": "MIT"
