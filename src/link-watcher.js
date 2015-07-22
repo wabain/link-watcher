@@ -89,7 +89,7 @@
     if (rootElement.jquery) {
       rootElement.on('click', listener);
     } else {
-      rootElement.addEventListener('click', listener);
+      rootElement.addEventListener('click', listener, false);
     }
 
     return listener;
