@@ -137,20 +137,22 @@
     } else {
       relativePath = path.substring(rootPath.length);
 
+      // Make relative URLs for paths starting with a slash
       if (relativePath.charAt(0) === '/') {
         // We need these conditions to handle some corner cases around URLs with multiple slashes
-          // FIXME
 
+        // When building a relative URL for /foo//bar from a base URL like /foo/, we get a naive
+        // relative path of /bar and we need to turn it into .//bar
         if (rootPath.charAt(rootPath.length - 1) === '/') {
-          // Given a root like foo/ and a URL like foo//bar, we get a naive relative path of /bar and
-          // we need to get other slashes from the root path
+          // Prepend a doubled slash
           relativePath = '/' + relativePath;
         } else if (relativePath.charAt(1) !== '/') {
-          // Given a root like foo and a URL like foo//bar, we get a naive relative path of //bar, which
-          // shouldn't be normalized to /bar
+          // In the simpler case where the base URL is /foo and we have /foo/bar, we can just
+          // remove the leading slash
           relativePath = relativePath.substring(1);
         }
 
+        // Prepend a dot to the path if necessary
         if (relativePath.charAt(0) === '/') {
           relativePath = '.' + relativePath;
         }
