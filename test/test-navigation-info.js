@@ -103,20 +103,20 @@ describe('getNavigationInfo()', function () {
     });
   });
 
-  describe('local link detection', function () {
+  describe('local navigation detection', function () {
     it('should treat clicks with the control and meta keys as non-local', function () {
       var info;
 
       info = pathInfoFrom('http://example.org/', 'http://example.org/foo', {ctrlKey: true});
-      expect(info).toEqual(jasmine.objectContaining({isRelative: true, isLocalLink: false}), 'ctrl');
+      expect(info).toEqual(jasmine.objectContaining({isRelative: true, isLocalNavigation: false}), 'ctrl');
 
       info = pathInfoFrom('http://example.org/', 'http://example.org/foo', {metaKey: true});
-      expect(info).toEqual(jasmine.objectContaining({isRelative: true, isLocalLink: false}), 'meta');
+      expect(info).toEqual(jasmine.objectContaining({isRelative: true, isLocalNavigation: false}), 'meta');
     });
 
     it('should treat clicks with the center mouse button as non-local', function () {
       var info = pathInfoFrom('http://example.org/', 'http://example.org/foo', {which: 2});
-      expect(info).toEqual(jasmine.objectContaining({isRelative: true, isLocalLink: false}));
+      expect(info).toEqual(jasmine.objectContaining({isRelative: true, isLocalNavigation: false}));
     });
 
     it('should treat clicks on anchors with targets as non-local', function () {
@@ -126,7 +126,7 @@ describe('getNavigationInfo()', function () {
 
       var info = LinkWatcher.getNavigationInfo({target: anchor}, LinkWatcher.urlResolve('http://example.org/'));
 
-      expect(info).toEqual(jasmine.objectContaining({isRelative: true, isLocalLink: false}));
+      expect(info).toEqual(jasmine.objectContaining({isRelative: true, isLocalNavigation: false}));
     });
   });
 });

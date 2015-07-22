@@ -119,7 +119,7 @@
     var path = navInfo.pathname,
         rootPath = rootInfo.pathname;
 
-    var isRelative, relativePath, isLocalLink;
+    var isRelative, relativePath, isLocalNavigation;
 
     if (navInfo.protocol !== rootInfo.protocol ||
         navInfo.host.toLowerCase() !== rootInfo.host.toLowerCase() ||
@@ -134,7 +134,7 @@
 
     if (!isRelative) {
       relativePath = null;
-      isLocalLink = false;
+      isLocalNavigation = false;
     } else {
       relativePath = path.substring(rootPath.length);
 
@@ -161,20 +161,20 @@
 
       var defaultPrevented = event.isDefaultPrevented ? event.isDefaultPrevented() : event.defaultPrevented;
 
-      isLocalLink = !(defaultPrevented ||
-                      // Control/command key pressed
-                      event.ctrlKey || event.metaKey ||
-                      // Clicked with center mouse button
-                      event.which === 2 ||
-                      // Target iframe specified
-                      anchorElem.getAttribute('target'));
+      isLocalNavigation = !(defaultPrevented ||
+                            // Control/command key pressed
+                            event.ctrlKey || event.metaKey ||
+                            // Clicked with center mouse button
+                            event.which === 2 ||
+                            // Target iframe specified
+                            anchorElem.getAttribute('target'));
     }
 
     extend(navInfo, {
       anchor: anchorElem,
       isRelative: isRelative,
       relativePath: relativePath,
-      isLocalLink: isLocalLink
+      isLocalNavigation: isLocalNavigation
     });
 
     return navInfo;
