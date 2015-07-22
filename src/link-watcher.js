@@ -127,8 +127,8 @@
       isRelative = false;
     } else {
       isRelative = (path.length === rootPath.length ||
-                    path[rootPath.length] === '/' ||
-                    rootPath[rootPath.length - 1] === '/');
+                    path.charAt(rootPath.length) === '/' ||
+                    rootPath.charAt(rootPath.length - 1) === '/');
     }
 
     if (!isRelative) {
@@ -137,21 +137,21 @@
     } else {
       relativePath = path.substring(rootPath.length);
 
-      if (relativePath[0] === '/') {
+      if (relativePath.charAt(0) === '/') {
         // We need these conditions to handle some corner cases around URLs with multiple slashes
-        if (rootPath[rootPath.length - 1] === '/') {
           // FIXME
 
+        if (rootPath.charAt(rootPath.length - 1) === '/') {
           // Given a root like foo/ and a URL like foo//bar, we get a naive relative path of /bar and
           // we need to get other slashes from the root path
           relativePath = '/' + relativePath;
-        } else if (relativePath[1] !== '/') {
+        } else if (relativePath.charAt(1) !== '/') {
           // Given a root like foo and a URL like foo//bar, we get a naive relative path of //bar, which
           // shouldn't be normalized to /bar
           relativePath = relativePath.substring(1);
         }
 
-        if (relativePath[0] === '/') {
+        if (relativePath.charAt(0) === '/') {
           relativePath = '.' + relativePath;
         }
       }
