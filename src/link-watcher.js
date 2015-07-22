@@ -100,18 +100,19 @@
     var rootInfo = urlResolve(rootHref);
 
     return function listen(event) {
-      var a = getAnchorElement(event.target, event.currentTarget);
+      var navInfo = getNavigationInfo(event, rootInfo);
 
-      if (!a || typeof a.getAttribute('href') !== 'string')
-        return;
-
-      var navInfo = getNavigationInfo(a, event, rootInfo);
-
-      callback(event, navInfo);
+      if (navInfo)
+        callback(event, navInfo);
     };
   }
 
-  function getNavigationInfo(anchorElem, event, rootInfo) {
+  function getNavigationInfo(event, rootInfo) {
+    var anchorElem = getAnchorElement(event.target, event.currentTarget);
+
+    if (!anchorElem || typeof anchorElem.getAttribute('href') !== 'string')
+      return null;
+
     var navInfo = urlResolve(anchorElem.href);
 
     // Convenience variables
