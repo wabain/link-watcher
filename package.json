@@ -1,6 +1,6 @@
 {
   "name": "link-watcher",
-  "version": "0.0.0",
+  "version": "0.1.0-beta",
   "description": "Framework-agnostic link watching utility",
   "main": "src/link-watcher.js",
   "devDependencies": {
