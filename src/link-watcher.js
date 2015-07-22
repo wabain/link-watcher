@@ -58,9 +58,9 @@
   'use strict';
 
   // Export functions
-  exports.onLinkClicked    = onLinkClicked;
-  exports.getPathInfo      = getPathInfo;
-  exports.urlResolve       = urlResolve;
+  exports.onLinkClicked     = onLinkClicked;
+  exports.getNavigationInfo = getNavigationInfo;
+  exports.urlResolve        = urlResolve;
 
   /**
    * Initialize an event listener which listens for clicks on anchor objects
@@ -105,23 +105,23 @@
       if (!a || typeof a.getAttribute('href') !== 'string')
         return;
 
-      var pathInfo = getPathInfo(a, event, rootInfo);
+      var navInfo = getNavigationInfo(a, event, rootInfo);
 
-      callback(event, pathInfo);
+      callback(event, navInfo);
     };
   }
 
-  function getPathInfo(anchorElem, event, rootInfo) {
-    var pathInfo = urlResolve(anchorElem.href);
+  function getNavigationInfo(anchorElem, event, rootInfo) {
+    var navInfo = urlResolve(anchorElem.href);
 
     // Convenience variables
-    var path = pathInfo.pathname,
+    var path = navInfo.pathname,
         rootPath = rootInfo.pathname;
 
     var isRelative, relativePath, isLocalLink;
 
-    if (pathInfo.protocol !== rootInfo.protocol ||
-        pathInfo.host.toLowerCase() !== rootInfo.host.toLowerCase() ||
+    if (navInfo.protocol !== rootInfo.protocol ||
+        navInfo.host.toLowerCase() !== rootInfo.host.toLowerCase() ||
         rootPath !== path.substr(0, rootPath.length)) {
 
       isRelative = false;
@@ -169,14 +169,14 @@
                       anchorElem.getAttribute('target'));
     }
 
-    extend(pathInfo, {
+    extend(navInfo, {
       anchor: anchorElem,
       isRelative: isRelative,
       relativePath: relativePath,
       isLocalLink: isLocalLink
     });
 
-    return pathInfo;
+    return navInfo;
   }
 
   /**

@@ -1,10 +1,10 @@
-describe('getPathInfo()', function () {
+describe('getNavigationInfo()', function () {
   function pathInfoFrom(root, relative, event) {
     var anchor = document.createElement('a');
     anchor.href = relative;
 
     // Since we basically just check booleans for the event, an empty object is a good default
-    return LinkWatcher.getPathInfo(anchor, event || {}, LinkWatcher.urlResolve(root));
+    return LinkWatcher.getNavigationInfo(anchor, event || {}, LinkWatcher.urlResolve(root));
   }
 
   describe('relative path detection', function () {
@@ -119,7 +119,7 @@ describe('getPathInfo()', function () {
       anchor.setAttribute('target', '_self');
       anchor.href = 'http://example.org/foo';
 
-      var info = LinkWatcher.getPathInfo(anchor, {}, LinkWatcher.urlResolve('http://example.org/'));
+      var info = LinkWatcher.getNavigationInfo(anchor, {}, LinkWatcher.urlResolve('http://example.org/'));
 
       expect(info).toEqual(jasmine.objectContaining({isRelative: true, isLocalLink: false}));
     });
