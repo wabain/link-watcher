@@ -8,12 +8,14 @@
     "karma": "~0.13.0",
     "jasmine-core": "~2.3.4",
     "karma-jasmine": "~0.3.3",
-    "karma-phantomjs-launcher": "~0.1.4"
+    "karma-phantomjs-launcher": "~0.1.4",
+    "jshint": "~2.8.0"
   },
   "scripts": {
     "test": "karma start",
     "test-ci": "karma start --single-run",
-    "build": "cp src/link-watcher.js dist/link-watcher.js && uglifyjs dist/link-watcher.js -cm --source-map dist/link-watcher.min.js.map -o dist/link-watcher.min.js"
+    "build": "cp src/link-watcher.js dist/link-watcher.js && uglifyjs dist/link-watcher.js -cm --source-map dist/link-watcher.min.js.map -o dist/link-watcher.min.js",
+    "lint": "jshint src/ test/"
   },
   "author": "William Bain <bain.william.a@gmail.com>",
   "license": "MIT"
