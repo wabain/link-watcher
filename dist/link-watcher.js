@@ -120,22 +120,20 @@
         rootPath = rootInfo.pathname;
 
     var isRelative, relativePath, isLocalNavigation;
+    var isFragmentNavigation = false;
 
     if (navInfo.protocol !== rootInfo.protocol ||
         navInfo.host.toLowerCase() !== rootInfo.host.toLowerCase() ||
         rootPath !== path.substr(0, rootPath.length)) {
 
       isRelative = false;
+      relativePath = null;
+      isLocalNavigation = false;
     } else {
       isRelative = (path.length === rootPath.length ||
                     path.charAt(rootPath.length) === '/' ||
                     rootPath.charAt(rootPath.length - 1) === '/');
-    }
 
-    if (!isRelative) {
-      relativePath = null;
-      isLocalNavigation = false;
-    } else {
       relativePath = path.substring(rootPath.length);
 
       // Make relative URLs for paths starting with a slash
@@ -157,6 +155,8 @@
         if (relativePath.charAt(0) === '/') {
           relativePath = '.' + relativePath;
         }
+      } else if (relativePath === '' && anchorElem.getAttribute('href').indexOf('#') >= 0) {
+        isFragmentNavigation = true;
       }
 
       var defaultPrevented = event.isDefaultPrevented ? event.isDefaultPrevented() : event.defaultPrevented;
@@ -174,7 +174,8 @@
       anchor: anchorElem,
       isRelative: isRelative,
       relativePath: relativePath,
-      isLocalNavigation: isLocalNavigation
+      isLocalNavigation: isLocalNavigation,
+      isFragmentNavigation: isFragmentNavigation
     });
 
     return navInfo;
