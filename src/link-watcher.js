@@ -127,13 +127,16 @@
         rootPath !== path.substr(0, rootPath.length)) {
 
       isRelative = false;
-      relativePath = null;
-      isLocalNavigation = false;
     } else {
       isRelative = (path.length === rootPath.length ||
                     path.charAt(rootPath.length) === '/' ||
                     rootPath.charAt(rootPath.length - 1) === '/');
+    }
 
+    if (!isRelative) {
+      relativePath = null;
+      isLocalNavigation = false;
+    } else {
       relativePath = path.substring(rootPath.length);
 
       // Make relative URLs for paths starting with a slash
