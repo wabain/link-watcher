@@ -139,25 +139,57 @@ describe('getNavigationInfo()', function () {
   });
 
   describe('fragment navigation', function () {
-    it('applies if the link is relative and there is a fragment in the href', function () {
-      expect(pathInfoFrom('', '#').isFragmentNavigation).toBe(true);
-      expect(pathInfoFrom('#', '').isFragmentNavigation).toBe(false);
+    function setLocation(urlUtilsValue) {
+      LinkWatcher._location = {
+        protocol: urlUtilsValue.protocol || 'http:',
+        host: urlUtilsValue.host,
+        port: urlUtilsValue.port || '',
+        pathname: urlUtilsValue.pathname,
+        search: urlUtilsValue.search || '',
+        hash: urlUtilsValue.hash || ''
+      };
+    }
 
-      expect(pathInfoFrom('http://example.org/foo/', 'http://google.com/foo/#').isFragmentNavigation).toBe(false);
+    function navigationFrom(currentUrlComponents, linkUrl, event) {
+      setLocation(currentUrlComponents);
 
-      expect(pathInfoFrom('http://example.org/', 'http://example.org/#').isFragmentNavigation).toBe(true);
-      expect(pathInfoFrom('http://example.org/', 'http://example.org/').isFragmentNavigation).toBe(false);
+      return pathInfoFrom('', linkUrl, event);
+    }
 
-      expect(pathInfoFrom('/foo/#bar', '/foo/../foo/#baz').isFragmentNavigation).toBe(true);
+    afterEach(function () {
+      LinkWatcher._location = window.location;
     });
 
-    // FIXME: feature or bug?
-    it('applies even for non-local navigation', function () {
-      var info = pathInfoFrom('', '#', {which: 2});
-      expect(info.isRelative).toBe(true, 'sanity check (relative)');
-      expect(info.isLocalNavigation).toBe(false, 'sanity check (local navigation)');
+    it('applies if the link is to the current location and there is a fragment in the href', function () {
+      expect(navigationFrom({
+        host: 'example.org',
+        pathname: '/foo/'
+      }, 'http://example.org/foo/#').isFragmentNavigation).toBe(true);
 
-      expect(info.isFragmentNavigation).toBe(true, 'fragment navigation');
+      expect(navigationFrom({
+        host: 'example.org',
+        pathname: '/foo/',
+        hash: '#'
+      }, 'http://example.org/foo/').isFragmentNavigation).toBe(false);
+
+      expect(navigationFrom({
+        host: 'example.org',
+        pathname: '/foo/',
+        hash: '#bar'
+      }, 'http://example.org/foo/#baz').isFragmentNavigation).toBe(true);
+
+      expect(navigationFrom({
+        host: 'example.org',
+        pathname: '/foo/',
+        hash: '#bar'
+      }, 'http://example.org/qux/../foo/#baz').isFragmentNavigation).toBe(true);
+    });
+
+    it('does not apply if the click event is not local', function () {
+      expect(navigationFrom({
+        host: 'example.org',
+        pathname: '/foo/'
+      }, 'http://example.org/foo/#', {ctrlKey: true}).isFragmentNavigation).toBe(false);
     });
   });
 });
