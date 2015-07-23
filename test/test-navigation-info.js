@@ -129,4 +129,27 @@ describe('getNavigationInfo()', function () {
       expect(info).toEqual(jasmine.objectContaining({isRelative: true, isLocalNavigation: false}));
     });
   });
+
+  describe('fragment navigation', function () {
+    it('applies if the link is relative and there is a fragment in the href', function () {
+      expect(pathInfoFrom('', '#').isFragmentNavigation).toBe(true);
+      expect(pathInfoFrom('#', '').isFragmentNavigation).toBe(false);
+
+      expect(pathInfoFrom('http://example.org/foo/', 'http://google.com/foo/#').isFragmentNavigation).toBe(false);
+
+      expect(pathInfoFrom('http://example.org/', 'http://example.org/#').isFragmentNavigation).toBe(true);
+      expect(pathInfoFrom('http://example.org/', 'http://example.org/').isFragmentNavigation).toBe(false);
+
+      expect(pathInfoFrom('/foo/#bar', '/foo/../foo/#baz').isFragmentNavigation).toBe(true);
+    });
+
+    // FIXME: feature or bug?
+    it('applies even for non-local navigation', function () {
+      var info = pathInfoFrom('', '#', {which: 2});
+      expect(info.isRelative).toBe(true, 'sanity check (relative)');
+      expect(info.isLocalNavigation).toBe(false, 'sanity check (local navigation)');
+
+      expect(info.isFragmentNavigation).toBe(true, 'fragment navigation');
+    });
+  });
 });

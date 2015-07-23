@@ -120,6 +120,7 @@
         rootPath = rootInfo.pathname;
 
     var isRelative, relativePath, isLocalNavigation;
+    var isFragmentNavigation = false;
 
     if (navInfo.protocol !== rootInfo.protocol ||
         navInfo.host.toLowerCase() !== rootInfo.host.toLowerCase() ||
@@ -154,6 +155,8 @@
         if (relativePath.charAt(0) === '/') {
           relativePath = '.' + relativePath;
         }
+      } else if (relativePath === '' && anchorElem.getAttribute('href').indexOf('#') >= 0) {
+        isFragmentNavigation = true;
       }
 
       var defaultPrevented = event.isDefaultPrevented ? event.isDefaultPrevented() : event.defaultPrevented;
@@ -171,7 +174,8 @@
       anchor: anchorElem,
       isRelative: isRelative,
       relativePath: relativePath,
-      isLocalNavigation: isLocalNavigation
+      isLocalNavigation: isLocalNavigation,
+      isFragmentNavigation: isFragmentNavigation
     });
 
     return navInfo;
