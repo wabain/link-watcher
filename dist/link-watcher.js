@@ -62,6 +62,9 @@
   exports.getNavigationInfo = getNavigationInfo;
   exports.urlResolve        = urlResolve;
 
+  // Use a local reference to the location so that it can be easily mocked in tests
+  exports._location = window.location;
+
   /**
    * Initialize an event listener which listens for clicks on anchor objects
    * with hrefs
@@ -80,7 +83,7 @@
     options = options || {};
 
     // Get values for options
-    var rootHref = options.rootHref || window.location.href;
+    var rootHref = options.rootHref || exports._location.href;
 
     // Get the event listener callback
     var listener = getListener(rootHref, callback);
@@ -113,61 +116,37 @@
     if (!anchorElem || typeof anchorElem.getAttribute('href') !== 'string')
       return null;
 
-    var navInfo = urlResolve(anchorElem.href);
+    var navInfo = urlResolve(anchorElem.href),
+        anchorTarget = anchorElem.getAttribute('target'),
+        clickTargetedHere = isLocalNavigationEvent(event);
 
     // Convenience variables
     var path = navInfo.pathname,
         rootPath = rootInfo.pathname;
 
-    var isRelative, relativePath, isLocalNavigation;
-    var isFragmentNavigation = false;
+    var isRelative = (navInfo.protocol === rootInfo.protocol &&
+                      navInfo.host.toLowerCase() === rootInfo.host.toLowerCase() &&
+                      rootPath === path.substr(0, rootPath.length) &&
+                      (path.length === rootPath.length ||
+                       path.charAt(rootPath.length) === '/' ||
+                       rootPath.charAt(rootPath.length - 1) === '/'));
 
-    if (navInfo.protocol !== rootInfo.protocol ||
-        navInfo.host.toLowerCase() !== rootInfo.host.toLowerCase() ||
-        rootPath !== path.substr(0, rootPath.length)) {
+    var relativePath, isLocalNavigation;
 
-      isRelative = false;
-      relativePath = null;
-      isLocalNavigation = false;
+    if (isRelative) {
+      isLocalNavigation = clickTargetedHere && !anchorTarget;
+      relativePath = getRelativePath(rootPath, path);
     } else {
-      isRelative = (path.length === rootPath.length ||
-                    path.charAt(rootPath.length) === '/' ||
-                    rootPath.charAt(rootPath.length - 1) === '/');
+      isLocalNavigation = false;
+      relativePath = null;
+    }
 
-      relativePath = path.substring(rootPath.length);
+    var isFragmentNavigation;
 
-      // Make relative URLs for paths starting with a slash
-      if (relativePath.charAt(0) === '/') {
-        // We need these conditions to handle some corner cases around URLs with multiple slashes
-
-        // When building a relative URL for /foo//bar from a base URL like /foo/, we get a naive
-        // relative path of /bar and we need to turn it into .//bar
-        if (rootPath.charAt(rootPath.length - 1) === '/') {
-          // Prepend a doubled slash
-          relativePath = '/' + relativePath;
-        } else if (relativePath.charAt(1) !== '/') {
-          // In the simpler case where the base URL is /foo and we have /foo/bar, we can just
-          // remove the leading slash
-          relativePath = relativePath.substring(1);
-        }
-
-        // Prepend a dot to the path if necessary
-        if (relativePath.charAt(0) === '/') {
-          relativePath = '.' + relativePath;
-        }
-      } else if (relativePath === '' && anchorElem.getAttribute('href').indexOf('#') >= 0) {
-        isFragmentNavigation = true;
-      }
-
-      var defaultPrevented = event.isDefaultPrevented ? event.isDefaultPrevented() : event.defaultPrevented;
-
-      isLocalNavigation = !(defaultPrevented ||
-                            // Control/command key pressed
-                            event.ctrlKey || event.metaKey ||
-                            // Clicked with center mouse button
-                            event.which === 2 ||
-                            // Target iframe specified
-                            anchorElem.getAttribute('target'));
+    if (!clickTargetedHere || (anchorTarget && anchorTarget !== '_self')) {
+      isFragmentNavigation = false;
+    } else {
+      isFragmentNavigation = isLocationFragment(anchorElem);
     }
 
     extend(navInfo, {
@@ -179,6 +158,57 @@
     });
 
     return navInfo;
+  }
+
+  function isLocationFragment(anchorElem) {
+    // FIXME: what about those IE compat caveats?
+
+    if (anchorElem.getAttribute('href').indexOf('#') === -1)
+        return false;
+
+    var location = exports._location;
+
+    return (location.protocol === anchorElem.protocol &&
+            location.host === anchorElem.host && // FIXME: case normalization?
+            location.pathname === anchorElem.pathname &&
+            location.search === anchorElem.search);
+  }
+
+  function isLocalNavigationEvent(event) {
+    var defaultPrevented = event.isDefaultPrevented ? event.isDefaultPrevented() : event.defaultPrevented;
+
+    return !(defaultPrevented ||
+             // Control/command key pressed
+             event.ctrlKey || event.metaKey ||
+             // Clicked with center mouse button
+             event.which === 2);
+  }
+
+  function getRelativePath(base, path) {
+    var relativePath = path.substring(base.length);
+
+    // Make relative URLs for paths starting with a slash
+    if (relativePath.charAt(0) === '/') {
+      // We need these conditions to handle some corner cases around URLs with multiple slashes
+
+      // When building a relative URL for /foo//bar from a base URL like /foo/, we get a naive
+      // relative path of /bar and we need to turn it into .//bar
+      if (base.charAt(base.length - 1) === '/') {
+        // Prepend a doubled slash
+        relativePath = '/' + relativePath;
+      } else if (relativePath.charAt(1) !== '/') {
+        // In the simpler case where the base URL is /foo and we have /foo/bar, we can just
+        // remove the leading slash
+        relativePath = relativePath.substring(1);
+      }
+
+      // Prepend a dot to the path if necessary
+      if (relativePath.charAt(0) === '/') {
+        relativePath = '.' + relativePath;
+      }
+    }
+
+    return relativePath;
   }
 
   /**
