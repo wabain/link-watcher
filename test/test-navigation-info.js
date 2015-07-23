@@ -77,7 +77,7 @@ describe('getNavigationInfo()', function () {
     function expectRelative(root, full, rel) {
       expect(pathInfoFrom(root, full).relativePath).toBe(rel);
 
-      var rebuilt = root + (root[root.length-1] === '/' ? '' : '/') + rel;
+      var rebuilt = root + (root.charAt(root.length - 1) === '/' ? '' : '/') + rel;
 
       expect(pathInfoFrom(root, rebuilt).relativePath).toBe(rel, 'idempotency');
     }
