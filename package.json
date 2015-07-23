@@ -1,6 +1,10 @@
 {
   "name": "link-watcher",
   "version": "0.1.0-beta",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wabain/link-watcher"
+  },
   "description": "Framework-agnostic link watching utility",
   "main": "src/link-watcher.js",
   "devDependencies": {
