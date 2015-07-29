@@ -146,7 +146,7 @@
     if (!clickTargetedHere || (anchorTarget && anchorTarget !== '_self')) {
       isFragmentNavigation = false;
     } else {
-      isFragmentNavigation = isLocationFragment(anchorElem);
+      isFragmentNavigation = isLocationFragment(navInfo.urlUtils);
     }
 
     extend(navInfo, {
@@ -160,18 +160,18 @@
     return navInfo;
   }
 
-  function isLocationFragment(anchorElem) {
-    // FIXME: what about those IE compat caveats?
+  function isLocationFragment(urlUtils) {
+    // FIXME: do I really need to do URLUtils separately for those IE compat caveats?
 
-    if (anchorElem.getAttribute('href').indexOf('#') === -1)
+    if (!urlUtils.hash)
         return false;
 
     var location = exports._location;
 
-    return (location.protocol === anchorElem.protocol &&
-            location.host === anchorElem.host && // FIXME: case normalization?
-            location.pathname === anchorElem.pathname &&
-            location.search === anchorElem.search);
+    return (location.protocol === urlUtils.protocol &&
+            location.host === urlUtils.host && // FIXME: case normalization?
+            location.pathname === urlUtils.pathname &&
+            location.search === urlUtils.search);
   }
 
   function isLocalNavigationEvent(event) {
@@ -317,7 +317,24 @@
     urlParsingNode.setAttribute('href', href);
 
     // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
+
     return {
+      urlUtils: {
+        href: urlParsingNode.href,
+        protocol: urlParsingNode.protocol,
+        host: urlParsingNode.host,
+        search: urlParsingNode.search,
+
+        // Some browsers don't seem to prepend the #
+        // TODO(wabain): Get a better idea of the compat picture here
+        hash: urlParsingNode.getAttribute('href').indexOf('#') >= 0 && urlParsingNode.hash.charAt(0) !== '#'
+            ? '#' + urlParsingNode.hash
+            : urlParsingNode.hash,
+
+        hostname: urlParsingNode.hostname,
+        port: urlParsingNode.port,
+        pathname: urlParsingNode.pathname
+      },
       href: urlParsingNode.href,
       protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
       host: urlParsingNode.host,
