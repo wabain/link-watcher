@@ -105,8 +105,6 @@ describe('getNavigationInfo()', function () {
     it('should use a `.` segment when the relative path starts with an empty component', function () {
       expectRelative('http://example.org/foo/', 'http://example.org/foo//bar', './/bar');
       expectRelative('http://example.org/foo', 'http://example.org/foo//bar', './/bar');
-
-      // FIXME
       expectRelative('http://example.org/foo//', 'http://example.org/foo///bar', './/bar');
     });
   });
