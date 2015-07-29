@@ -135,7 +135,7 @@
 
     if (isRelative) {
       isLocalNavigation = clickTargetedHere && !anchorTarget;
-      relativePath = getRelativePath(rootPath, path);
+      relativePath = getRelativePath(rootPath, navInfo.urlUtils);
     } else {
       isLocalNavigation = false;
       relativePath = null;
@@ -184,7 +184,8 @@
              event.which === 2);
   }
 
-  function getRelativePath(base, path) {
+  function getRelativePath(base, urlUtils) {
+    var path = urlUtils.pathname;
     var relativePath = path.substring(base.length);
 
     // Make relative URLs for paths starting with a slash
@@ -208,7 +209,7 @@
       }
     }
 
-    return relativePath;
+    return relativePath + urlUtils.search + urlUtils.hash;
   }
 
   /**
